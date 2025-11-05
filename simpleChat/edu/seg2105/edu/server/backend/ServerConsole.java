@@ -1,10 +1,10 @@
 package edu.seg2105.edu.server.backend; 
 
 import java.io.*;
-import java.util.Scanner;
 import edu.seg2105.client.common.ChatIF; 
 
-public class ServerConsole implements ChatIF {
+// The class must implement Runnable to be run in its own thread
+public class ServerConsole implements ChatIF, Runnable {
     
     private EchoServer server;
     
@@ -19,28 +19,30 @@ public class ServerConsole implements ChatIF {
 
     }
 
-    public void accept() {
+    /**
+     * Replaces the old accept() method. Runs in a separate thread to handle 
+     * console input without blocking the main server thread.
+     */
+    @Override
+    public void run() { 
         
-        Scanner fromConsole = new Scanner(System.in);
-        String message;
-        System.out.println("Server Console Running. Type messages or commands (#).");
-
         try {
+            // Use BufferedReader for robust blocking console input
+            BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
+            String message;
+            System.out.println("Server Console Running. Type messages or commands (#).");
+
             while (true) {
                 
-                if (fromConsole.hasNextLine()) {
-                    message = fromConsole.nextLine();
-                    handleMessageFromServerUI(message);
-                } else {
-                    
-                    Thread.sleep(100); 
-                }
+                // This line blocks until input is received, which is safe in a separate thread
+                message = fromConsole.readLine(); 
+                handleMessageFromServerUI(message);
+
             }
         } catch (Exception e) {
-            System.out.println("FATAL ERROR: Server console input failed or thread interrupted.");
+
+            System.out.println("FATAL ERROR: Server console input thread failed.");
             
-        } finally {
-            fromConsole.close();
         }
     }
 
@@ -48,6 +50,7 @@ public class ServerConsole implements ChatIF {
         
         if (message.startsWith("#")) {
                 
+            // Robust command parsing: trim whitespace and convert to lowercase
             String command = message.split(" ", 2)[0].trim().toLowerCase(); 
             
             if (command.equals("#quit")) {
@@ -97,7 +100,8 @@ public class ServerConsole implements ChatIF {
                 } 
                 catch (IOException e) {
 
-                    System.out.println("FATAL ERROR: Server closure failed. Stack Trace follows:");
+                    // Diagnostic output for closure failure
+                    System.out.println("FATAL ERROR: Server closure failed. Check stack trace below:");
                     e.printStackTrace(); 
                     
                 }

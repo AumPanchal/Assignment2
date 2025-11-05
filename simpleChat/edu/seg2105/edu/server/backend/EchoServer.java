@@ -82,7 +82,7 @@ public class EchoServer extends AbstractServer
         return;
       }
 
-      // FIX for TC 2004: Add the explicit "Message received" log for the initial #login command.
+      // Fix for TC 2004: Add the explicit "Message received" log for the initial #login command.
       System.out.println("Message received: " + message + " from null"); 
       
       String loginID = message.substring(7);
@@ -153,7 +153,7 @@ public class EchoServer extends AbstractServer
    * the server instance (there is no UI in this phase).
    *
    * @param args[0] The port number to listen on.  Defaults to 5555 
-   *          if no argument is entered.
+   * if no argument is entered.
    */
   public static void main(String[] args) 
   {
@@ -170,9 +170,16 @@ public class EchoServer extends AbstractServer
 	
     EchoServer sv = new EchoServer(port);
     
+    // --- FIX: Launch ServerConsole in a separate thread to prevent input lockup ---
+    ServerConsole serverUI = new ServerConsole(sv);
+    Thread consoleThread = new Thread(serverUI);
+    consoleThread.setDaemon(true); 
+    consoleThread.start();
+    // -----------------------------------------------------------------------------
+    
     try 
     {
-      sv.listen();
+      sv.listen(); // The main thread now runs the network listener
     } 
     catch (Exception ex) 
     {
