@@ -58,9 +58,8 @@ public class EchoServer extends AbstractServer
     String message = msg.toString();
 
     if (message.startsWith("#login ")) {
-
+        
       if (client.getInfo("loginID") != null) { 
-
         try {
 
           client.sendToClient("ERROR: Login Already Processed. Disconnecting.");
@@ -80,9 +79,11 @@ public class EchoServer extends AbstractServer
         catch (IOException e) {
         }
 
-        return; 
-        
+        return;
       }
+
+      // FIX for TC 2004: Add the explicit "Message received" log for the initial #login command.
+      System.out.println("Message received: " + message + " from null"); 
       
       String loginID = message.substring(7);
       client.setInfo("loginID", loginID); 
@@ -124,12 +125,6 @@ public class EchoServer extends AbstractServer
 
   }
 }
-
-
-
-
-
-
 
     
   /**
@@ -184,17 +179,29 @@ public class EchoServer extends AbstractServer
       System.out.println("ERROR");
     }
   }
-
+  @Override
   public void clientConnected(ConnectionToClient client) {
     
     System.out.println("A new client has connected to the server.");
 
   }
 
+  @Override
   public void clientDisconnected(ConnectionToClient client) {
 
-    System.out.println("Client: Disconnected");
+    String clientID = (String)client.getInfo("loginID");
+      
+    if (clientID != null) {
 
+      System.out.println(clientID + " has disconnected.");
+
+    } 
+          
+    else {
+        
+      System.out.println("Client: Disconnected"); 
+        
+    }
   }
 }
 //End of EchoServer class
