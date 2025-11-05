@@ -130,6 +130,32 @@ public class ClientConsole implements ChatIF
     }
     ClientConsole chat= new ClientConsole(host, DEFAULT_PORT);
     chat.accept();  //Wait for console data
+  
+    if (args.length >= 1) {
+
+      host = args[0];
+
+    }
+
+    if (args.length > 2) {
+      
+      try {
+
+        int port = Integer.parseInt(args[1]); //we changing the port from string to int
+        ClientConsole chat2 = new ClientConsole(host, port);
+        chat2.accept();
+
+      } 
+      
+      catch (NumberFormatException e) {
+
+        System.out.println("Port Number: Invalid. Using Default Port: " + DEFAULT_PORT);
+
+      }
+
+    }
+  
   }
+
 }
 //End of ConsoleChat class
