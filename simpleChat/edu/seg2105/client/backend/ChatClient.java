@@ -10,38 +10,26 @@ import edu.seg2105.client.common.*;
  */
 public class ChatClient extends AbstractClient
 {
-  // Instance variables **********************************************
-  
-  /**
-   * The interface type variable.  It allows the implementation of 
-   * the display method in the client.
-   */
+
   ChatIF clientUI; 
   
-  // New constant for Exercise 1b
-  public static final int DEFAULT_PORT = 5555; // Use the actual default port for your app
+  public static final int DEFAULT_PORT = 5555; 
 
-  
-  // Constructors ****************************************************
-  
-  public ChatClient(String host, int port, ChatIF clientUI) 
+  private String loginID; 
+
+  public ChatClient(String loginID, String host, int port, ChatIF clientUI) 
     throws IOException 
   {
-    super(host, port); //Call the superclass constructor
+    super(host, port);
     this.clientUI = clientUI;
-    // Note: The original SimpleChat may open the connection here, but
-    // the commands now allow the user to control connection status.
-    // openConnection(); // Remove if you want #login to be the first action
+    this.loginID = loginID;
   }
 
+  public String getLoginID() {
+      return loginID;
+  }
   
-  // Instance methods ************************************************
-    
-  /**
-   * This method handles all data that comes in from the server.
-   */
-  public void handleMessageFromServer(Object msg) 
-  {
+  public void handleMessageFromServer(Object msg) {
     clientUI.display(msg.toString());
   }
 
@@ -50,22 +38,23 @@ public class ChatClient extends AbstractClient
    *
    * This method implements all client commands for Exercise 2a.
    */
-  public void handleMessageFromClientUI(String message)
-  {
+  public void handleMessageFromClientUI(String message) {
     
+
     if (message.startsWith("#")) {
         
         String command = message.split(" ")[0].toLowerCase();
         
         if (command.equals("#quit")) {
-            
+
+            System.out.println("Client: Quitting");
             quit(); 
         }
         
         else if (command.equals("#logoff")) {
 
             if (isConnected()) {
-                
+
                 try {
 
                     closeConnection();
@@ -78,6 +67,7 @@ public class ChatClient extends AbstractClient
 
                 }
             } 
+            
             else {
 
                 clientUI.display("Client: Already Logged Off");
@@ -97,7 +87,6 @@ public class ChatClient extends AbstractClient
 
         }
         
-        
         else if (command.equals("#login")) {
 
             if (!isConnected()) {
@@ -108,7 +97,6 @@ public class ChatClient extends AbstractClient
                     System.out.println("Attempting To Connect...");
 
                 } 
-
                 catch (IOException e) {
 
                     clientUI.display("ERROR: Cannot Open Connection: " + e.getMessage());
@@ -122,96 +110,115 @@ public class ChatClient extends AbstractClient
             }
         }
         
-        
-        
         else if (command.equals("#sethost") || command.equals("#setport")) {
-            
             
             if (!isConnected()) {
                 
-                
                 String[] parts = message.split(" ", 2);
+
                 if (parts.length < 2) {
+
                     clientUI.display("ERROR: Command requires an argument.");
                     return;
+
                 }
+
                 String argument = parts[1];
                 
                 if (command.equals("#sethost")) {
+
                     setHost(argument);
-                    
                     System.out.println("Host Set To: " + argument);
-                } else {
+
+                } 
+
+                else {
 
                     try {
+
                         int newPort = Integer.parseInt(argument);
                         setPort(newPort);
-                        
                         System.out.println("Port Set: " + newPort);
-                    } catch (NumberFormatException e) {
+
+                    } 
+                    catch (NumberFormatException e) {
+
                         clientUI.display("ERROR: Invalid Port Number Format.");
+
                     }
                 }
-            } else {
-                
+            } 
+
+            else {
+
                 clientUI.display("ERROR: Must be logged off to change connection settings.");
+
             }
         }
-        
-        
         else {
+
             clientUI.display("ERROR: Unknown Command.");
+
         }
         
     } 
-    
     else {
+
         try {
+
             sendToServer(message);
-        } catch (IOException e) {
+
+        }
+        catch (IOException e) {
             clientUI.display("Could not send message to server. Terminating client.");
             quit();
         }
     }
 }
   
-  /**
-   * This method terminates the client.
-   */
-  public void quit()
-  {
-    try
-    {
-      closeConnection();
-    }
-    catch(IOException e) {}
-    System.exit(0);
-  }
-  
-  // --- Exercise 1a Implementations (Client Shutdown Response) ---
-
-  /**
-   * Hook method called after the connection has been closed gracefully.
-   */
-  @Override
-  public void connectionClosed() {
-    // Modify the client so it responds to the shutdown of the server by printing a message... (Exercise 1a)
-    System.out.println("--- Server has shut down. ---");
+    public void quit() {
     
-    // ... and quitting. (Exercise 1a)
-    System.exit(0);
-  }
+        try {
 
+            closeConnection();
 
-  /**
-   * Hook method called when an exception is raised by the client's thread.
-   */
-  @Override
-  public void connectionException(Exception exception) {
-    // Handle abnormal termination the same way.
-    System.out.println("--- Connection terminated unexpectedly. ---");
+        }
+        catch(IOException e) {
+        
+            System.exit(0);
 
-    System.exit(0);
-  }
+        }
+    }
+
+    @Override
+    protected void connectionEstablished() {
+        try {
+        
+            sendToServer("#login " + loginID);
+
+        }
+      
+        catch (IOException e) {
+
+            clientUI.display("ERROR: Failed to send automatic login command. Terminating.");
+            quit();
+        
+        }
+    }
+
+    @Override
+    public void connectionClosed() {    
+
+        System.out.println("Server: Connection Closed");
+        System.exit(0);
+    }
+
+    @Override
+    public void connectionException(Exception exception) {
+
+        System.out.println("Connection: Terminated");
+        System.exit(0);
+
+    }
 }
 // End of ChatClient class

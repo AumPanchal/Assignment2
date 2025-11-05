@@ -1,7 +1,7 @@
-package edu.seg2105.edu.server.backend;
+package edu.seg2105.edu.server.backend; 
 
 import java.io.*;
-import edu.seg2105.client.common.ChatIF;
+import edu.seg2105.client.common.ChatIF; 
 
 public class ServerConsole implements ChatIF {
     
@@ -14,46 +14,174 @@ public class ServerConsole implements ChatIF {
     @Override
     public void display(String message) {
         
-        System.out.println("Server Status: " + message);
+        System.out.println("SERVER STATUS: " + message);
+
     }
 
     public void accept() {
-
         try {
 
             BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
             String message;
-            System.out.println("Server Console: Running. Type Messages or Commands.");
+            System.out.println("Server Console Running. Type messages or commands (#).");
 
             while (true) {
-                
+
                 message = fromConsole.readLine();
                 handleMessageFromServerUI(message);
 
             }
+        } catch (Exception e) {
 
-        } 
-
-        catch (Exception e) {
-
-            System.out.println("FATAL ERROR: Server Console Input Failed.");
-
+            System.out.println("FATAL ERROR: Server console input failed.");
+            
         }
     }
 
     public void handleMessageFromServerUI(String message) {
         
-        System.out.println(message); 
+        if (message.startsWith("#")) {
+            
+            String command = message.split(" ")[0].toLowerCase();
+            
+            if (command.equals("#quit")) {
+
+                System.out.println("Server quitting gracefully...");
+
+                try {
+
+                    server.close();
+
+                } 
+                catch (IOException e) {
+                    
+                    System.out.println("Warning: Error during server shutdown.");
+
+                }
+
+                System.exit(0);
+
+            }
+            
+            else if (command.equals("#stop")) {
+
+                if (server.isListening()) {
+
+                    server.stopListening();
+                    System.out.println("Server stopped listening for new clients.");
+
+                } 
+
+                else {
+
+                    System.out.println("ERROR: Server is already stopped.");
+
+                }
+            }
+            
+            else if (command.equals("#close")) {
+
+                try {
+
+                    server.close(); 
+                    System.out.println("Server closed. All clients disconnected.");
+
+                } 
+
+                catch (IOException e) {
+
+                    System.out.println("ERROR closing server: " + e.getMessage());
+
+                }
+            }
+            
+            else if (command.equals("#start")) {
+
+                if (!server.isListening()) {
+
+                    try {
+
+                        server.listen();
+                        System.out.println("Server now listening for new clients on port " + server.getPort());
+
+                    } 
+                    
+                    catch (IOException e) {
+
+                        System.out.println("ERROR starting server: " + e.getMessage());
+
+                    }
+                } 
+                
+                else {
+
+                    System.out.println("ERROR: Server is already listening.");
+
+                }
+            }
+            
+            else if (command.equals("#getport")) {
+
+                System.out.println("Current Port: " + server.getPort());
+
+            }
+            
+            else if (command.equals("#setport")) {
+                
+                if (!server.isListening()) { 
+                    
+                    String[] parts = message.split(" ", 2);
+
+                    if (parts.length < 2) {
+                        System.out.println("ERROR: #setport requires a port number.");
+                        return;
+                    }
+                    
+                    String portText = parts[1];
+
+                    try {
+
+                        int newPort = Integer.parseInt(portText);
+                        server.setPort(newPort);
+                        System.out.println("Port set to: " + newPort);
+
+                    } 
+                    catch (NumberFormatException e) {
+
+                        System.out.println("ERROR: Invalid port number format.");
+
+                    }
+                } 
+                else {
+
+                    System.out.println("ERROR: Must #stop or #close server before changing port.");
+
+                }
+            }
+            
+            else {
+
+                System.out.println("ERROR: Unknown Server Command.");
+
+            }
+            
+        } 
         
-        try {
+        else {
             
-            String fullMessage = "Server MSG> " + message;
-            server.sendToAllClients(fullMessage);
+            System.out.println(message); 
             
-        } catch (Exception e) {
+            try {
+                
+                String fullMessage = "SERVER MSG> " + message;
+                server.sendToAllClients(fullMessage);
+                
+            } 
+            catch (Exception e) {
 
-            System.out.println("Warning: Cannot Send Message. Server May Be Closed or Stopped.");
+                System.out.println("Warning: Cannot send message to clients.");
 
+            }
         }
     }
 }

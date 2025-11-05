@@ -50,19 +50,18 @@ public class ClientConsole implements ChatIF
    * @param host The host to connect to.
    * @param port The port to connect on.
    */
-  public ClientConsole(String host, int port) 
-  {
-    try 
-    {
-      client= new ChatClient(host, port, this);
-      
-      
+  public ClientConsole(String loginID, String host, int port) {
+    try {
+
+      client = new ChatClient(loginID, host, port, this);
+
     } 
     catch(IOException exception) 
     {
-      System.out.println("Error: Can't setup connection!"
-                + " Terminating client.");
+
+      System.out.println("Error: Can't setup connection! Terminating client.");
       System.exit(1);
+
     }
     
     // Create scanner object to read from console
@@ -76,8 +75,7 @@ public class ClientConsole implements ChatIF
    * This method waits for input from the console.  Once it is 
    * received, it sends it to the client's message handler.
    */
-  public void accept() 
-  {
+  public void accept() {
     try
     {
 
@@ -115,47 +113,57 @@ public class ClientConsole implements ChatIF
    *
    * @param args[0] The host to connect to.
    */
-  public static void main(String[] args) 
-  {
-    String host = "";
-
-
-    try
-    {
-      host = args[0];
-    }
-    catch(ArrayIndexOutOfBoundsException e)
-    {
-      host = "localhost";
-    }
-    ClientConsole chat= new ClientConsole(host, DEFAULT_PORT);
-    chat.accept();  //Wait for console data
   
-    if (args.length >= 1) {
+   
+   public static void main(String[] args) {
 
-      host = args[0];
+    String loginID = ""; 
+    String host = "localhost"; 
+    int port = ChatClient.DEFAULT_PORT; 
+       
+    if (args.length < 1) {
+
+      System.out.println("ERROR: Login ID is mandatory. Client quitting.");
+      System.exit(0); 
+
+    } 
+    else {
+
+      loginID = args[0];
 
     }
+     
+    if (args.length >= 2) {
 
-    if (args.length > 2) {
-      
+      host = args[1]; 
+
+    }
+       
+    if (args.length >= 3) {
+
       try {
 
-        int port = Integer.parseInt(args[1]); //we changing the port from string to int
-        ClientConsole chat2 = new ClientConsole(host, port);
-        chat2.accept();
+        port = Integer.parseInt(args[2]); 
 
       } 
-      
       catch (NumberFormatException e) {
-
-        System.out.println("Port Number: Invalid. Using Default Port: " + DEFAULT_PORT);
+        
+        System.out.println("Warning: Invalid port format. Using default port (" + port + ").");
 
       }
+    }
+    
+    try {
+      
+      ClientConsole chat = new ClientConsole(loginID, host, port); 
+      chat.accept(); 
+       
+    } 
+    
+    catch (Exception e) {
+
+      System.out.println("Error: Could not start client application.");
 
     }
-  
   }
-
 }
-//End of ConsoleChat class

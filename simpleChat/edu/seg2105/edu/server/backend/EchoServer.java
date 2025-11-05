@@ -4,6 +4,8 @@ package edu.seg2105.edu.server.backend;
 // license found at www.lloseng.com 
 
 
+import java.io.IOException;
+
 import ocsf.server.*;
 
 /**
@@ -45,12 +47,90 @@ public class EchoServer extends AbstractServer
    * @param msg The message received from the client.
    * @param client The connection from which the message originated.
    */
-  public void handleMessageFromClient
-    (Object msg, ConnectionToClient client)
-  {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+
+
+
+
+
+
+  public void handleMessageFromClient(Object msg, ConnectionToClient client) {
+
+    String message = msg.toString();
+
+    if (message.startsWith("#login ")) {
+
+      if (client.getInfo("loginID") != null) { 
+
+        try {
+
+          client.sendToClient("ERROR: Login Already Processed. Disconnecting.");
+
+        } catch (IOException e) {
+
+          System.err.println("Failed To Send Error Message: " + e.getMessage());
+
+        }
+
+        try {
+
+          client.close(); 
+          
+        } 
+
+        catch (IOException e) {
+        }
+
+        return; 
+        
+      }
+      
+      String loginID = message.substring(7);
+      client.setInfo("loginID", loginID); 
+      System.out.println(loginID + " Has Successfully Logged In.");
+      this.sendToAllClients(loginID + " Has Connected.");
+
+    } 
+    else {
+    
+      String clientID = (String) client.getInfo("loginID");
+
+      if (clientID == null) {
+      
+        try {
+
+          client.sendToClient("ERROR: Must Login First. Disconnecting.");
+
+        } catch (IOException e) {
+
+          System.err.println("Failed To Send Error Message: " + e.getMessage());
+
+        }
+
+      try {
+
+        client.close();
+
+      } 
+      
+      catch (IOException e) {  
+      }
+
+      return;
+    }
+      
+    String prefixedMessage = clientID + "> " + message; 
+    System.out.println("Message Received From " + clientID + ": " + message);
+    this.sendToAllClients(prefixedMessage);
+
   }
+}
+
+
+
+
+
+
+
     
   /**
    * This method overrides the one in the superclass.  Called
@@ -58,8 +138,7 @@ public class EchoServer extends AbstractServer
    */
   protected void serverStarted()
   {
-    System.out.println
-      ("Server listening for connections on port " + getPort());
+    System.out.println("Server Listening For Connections On Port " + getPort());
   }
   
   /**
@@ -68,8 +147,7 @@ public class EchoServer extends AbstractServer
    */
   protected void serverStopped()
   {
-    System.out.println
-      ("Server has stopped listening for connections.");
+    System.out.println("Server Has Stopped Listening For Connections.");
   }
   
   
@@ -84,41 +162,39 @@ public class EchoServer extends AbstractServer
    */
   public static void main(String[] args) 
   {
-    int port = 0; //Port to listen on
+    int port = 0;
 
     try
     {
-      port = Integer.parseInt(args[0]); //Get port from command line
+      port = Integer.parseInt(args[0]);
     }
     catch(Throwable t)
     {
-      port = DEFAULT_PORT; //Set port to 5555
+      port = DEFAULT_PORT;
     }
 	
     EchoServer sv = new EchoServer(port);
     
     try 
     {
-      sv.listen(); //Start listening for connections
+      sv.listen();
     } 
     catch (Exception ex) 
     {
-      System.out.println("ERROR - Could not listen for clients!");
+      System.out.println("ERROR");
     }
   }
 
   public void clientConnected(ConnectionToClient client) {
 
-    System.out.println("Client connected to server.");
+    System.out.println("Client: Connected");
 
   }
 
   public void clientDisconnected(ConnectionToClient client) {
 
-    System.out.println("Client disconnected from server.");
+    System.out.println("Client: Disconnected");
 
   }
-
-
 }
 //End of EchoServer class
