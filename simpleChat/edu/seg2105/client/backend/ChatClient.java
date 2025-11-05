@@ -210,8 +210,6 @@ public class ChatClient extends AbstractClient {
 
     @Override
     public void connectionClosed() {    
-
-        System.out.println("The server has shut down.");
     }
 
     @Override
