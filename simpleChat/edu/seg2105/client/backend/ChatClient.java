@@ -8,37 +8,39 @@ import edu.seg2105.client.common.*;
  * This class overrides some of the methods defined in the abstract
  * superclass in order to give more functionality to the client.
  */
-public class ChatClient extends AbstractClient
-{
+public class ChatClient extends AbstractClient {
 
-  ChatIF clientUI; 
+    ChatIF clientUI; 
+    public static final int DEFAULT_PORT = 5555; 
+    private String loginID; 
+
+    public ChatClient(String loginID, String host, int port, ChatIF clientUI) throws IOException {
+
+        super(host, port);
+        this.clientUI = clientUI;
+        this.loginID = loginID;
+        openConnection();
+
+    }
+
+    public String getLoginID() {
+
+        return loginID;
+
+    }
   
-  public static final int DEFAULT_PORT = 5555; 
+    public void handleMessageFromServer(Object msg) {
 
-  private String loginID; 
+        clientUI.display(msg.toString());
 
-  public ChatClient(String loginID, String host, int port, ChatIF clientUI) 
-    throws IOException 
-  {
-    super(host, port);
-    this.clientUI = clientUI;
-    this.loginID = loginID;
-  }
+    }
 
-  public String getLoginID() {
-      return loginID;
-  }
-  
-  public void handleMessageFromServer(Object msg) {
-    clientUI.display(msg.toString());
-  }
-
-  /**
-   * This method handles all data coming from the UI (user input/commands).           
-   *
-   * This method implements all client commands for Exercise 2a.
-   */
-  public void handleMessageFromClientUI(String message) {
+        /**
+     * This method handles all data coming from the UI (user input/commands).           
+     *
+     * This method implements all client commands for Exercise 2a.
+     */
+    public void handleMessageFromClientUI(String message) {
     
 
     if (message.startsWith("#")) {
@@ -58,7 +60,7 @@ public class ChatClient extends AbstractClient
                 try {
 
                     closeConnection();
-                    System.out.println("Client: Logged Off");
+                    clientUI.display("Connection closed.");
 
                 } 
                 catch (IOException e) {
@@ -67,7 +69,7 @@ public class ChatClient extends AbstractClient
 
                 }
             } 
-            
+
             else {
 
                 clientUI.display("Client: Already Logged Off");
@@ -209,14 +211,13 @@ public class ChatClient extends AbstractClient
     @Override
     public void connectionClosed() {    
 
-        System.out.println("Server: Connection Closed");
-        System.exit(0);
+        System.out.println("The server has shut down.");
     }
 
     @Override
     public void connectionException(Exception exception) {
 
-        System.out.println("Connection: Terminated");
+        System.out.println("The server has shut down.");
         System.exit(0);
 
     }

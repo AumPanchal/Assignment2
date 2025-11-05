@@ -86,8 +86,8 @@ public class EchoServer extends AbstractServer
       
       String loginID = message.substring(7);
       client.setInfo("loginID", loginID); 
-      System.out.println(loginID + " Has Successfully Logged In.");
-      this.sendToAllClients(loginID + " Has Connected.");
+      System.out.println(loginID + " has logged on.");
+      this.sendToAllClients(loginID + " has logged on.");
 
     } 
     else {
@@ -119,7 +119,7 @@ public class EchoServer extends AbstractServer
     }
       
     String prefixedMessage = clientID + "> " + message; 
-    System.out.println("Message Received From " + clientID + ": " + message);
+    System.out.println("Message received: " + message + " from " + clientID);
     this.sendToAllClients(prefixedMessage);
 
   }
@@ -138,7 +138,7 @@ public class EchoServer extends AbstractServer
    */
   protected void serverStarted()
   {
-    System.out.println("Server Listening For Connections On Port " + getPort());
+    System.out.println("Server listening for connections on port " + getPort());
   }
   
   /**
@@ -147,7 +147,7 @@ public class EchoServer extends AbstractServer
    */
   protected void serverStopped()
   {
-    System.out.println("Server Has Stopped Listening For Connections.");
+    System.out.println("Server has stopped listening for connections.");
   }
   
   
@@ -186,8 +186,8 @@ public class EchoServer extends AbstractServer
   }
 
   public void clientConnected(ConnectionToClient client) {
-
-    System.out.println("Client: Connected");
+    
+    System.out.println("A new client has connected to the server.");
 
   }
 

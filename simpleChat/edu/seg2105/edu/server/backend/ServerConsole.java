@@ -34,7 +34,7 @@ public class ServerConsole implements ChatIF {
         } catch (Exception e) {
 
             System.out.println("FATAL ERROR: Server console input failed.");
-            
+
         }
     }
 
@@ -169,14 +169,14 @@ public class ServerConsole implements ChatIF {
         
         else {
             
-            System.out.println(message); 
-            
+            String fullMessage = "SERVER MESSAGE> " + message;
+            System.out.println(fullMessage); // Print prefixed message to server console
+                        
             try {
+
+                server.sendToAllClients(fullMessage); // Send prefixed message to clients
                 
-                String fullMessage = "SERVER MSG> " + message;
-                server.sendToAllClients(fullMessage);
-                
-            } 
+            }
             catch (Exception e) {
 
                 System.out.println("Warning: Cannot send message to clients.");

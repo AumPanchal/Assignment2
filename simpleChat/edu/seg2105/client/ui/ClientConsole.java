@@ -123,7 +123,7 @@ public class ClientConsole implements ChatIF
        
     if (args.length < 1) {
 
-      System.out.println("ERROR: Login ID is mandatory. Client quitting.");
+      System.out.println("ERROR - No login ID specified. Connection aborted.");
       System.exit(0); 
 
     } 
@@ -159,7 +159,7 @@ public class ClientConsole implements ChatIF
       chat.accept(); 
        
     } 
-    
+
     catch (Exception e) {
 
       System.out.println("Error: Could not start client application.");
