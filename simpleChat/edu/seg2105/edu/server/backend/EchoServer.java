@@ -48,11 +48,6 @@ public class EchoServer extends AbstractServer
    * @param client The connection from which the message originated.
    */
 
-
-
-
-
-
   public void handleMessageFromClient(Object msg, ConnectionToClient client) {
 
     String message = msg.toString();
@@ -82,7 +77,6 @@ public class EchoServer extends AbstractServer
         return;
       }
 
-      // Fix for TC 2004: Add the explicit "Message received" log for the initial #login command.
       System.out.println("Message received: " + message + " from null"); 
       
       String loginID = message.substring(7);
@@ -146,8 +140,6 @@ public class EchoServer extends AbstractServer
   }
   
   
-  //Class methods ***************************************************
-  
   /**
    * This method is responsible for the creation of 
    * the server instance (there is no UI in this phase).
@@ -170,16 +162,14 @@ public class EchoServer extends AbstractServer
 	
     EchoServer sv = new EchoServer(port);
     
-    // --- FIX: Launch ServerConsole in a separate thread to prevent input lockup ---
     ServerConsole serverUI = new ServerConsole(sv);
     Thread consoleThread = new Thread(serverUI);
-    consoleThread.setDaemon(true); 
     consoleThread.start();
-    // -----------------------------------------------------------------------------
+    
     
     try 
     {
-      sv.listen(); // The main thread now runs the network listener
+      sv.listen();
     } 
     catch (Exception ex) 
     {
@@ -189,7 +179,7 @@ public class EchoServer extends AbstractServer
   @Override
   public void clientConnected(ConnectionToClient client) {
     
-    System.out.println("A new client has connected to the server.");
+    System.out.println("A NEW CLIENT has connected to the server.");
 
   }
 

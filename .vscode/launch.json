@@ -1,66 +1,60 @@
 {
     "version": "0.2.0",
     "configurations": [
-        // --- 1. SERVER CONFIGURATION: Default Port (5555) ---
+        
         {
             "type": "java",
             "name": "Launch Server (Default 5555)",
             "request": "launch",
             "mainClass": "edu.seg2105.edu.server.backend.EchoServer",
             "projectName": "", 
-            "console": "integratedTerminal", // <-- ADD THIS LINE
+            "console": "integratedTerminal",
             "args": []
         },
         
-        // --- 2. SERVER CONFIGURATION: Port 1234 (For TC 2012, 2013) ---
         {
             "type": "java",
             "name": "Launch Server (Port 1234)",
             "request": "launch",
             "mainClass": "edu.seg2105.edu.server.backend.EchoServer",
             "projectName": "",
-            "console": "integratedTerminal", // <-- ADD THIS LINE
+            "console": "integratedTerminal",
             "args": ["1234"]
         },
         
-        
-        // --- 3. CLIENT CONFIGURATION: Alice ---
         {
             "type": "java",
             "name": "Launch Client 1 (Alice)",
             "request": "launch",
             "mainClass": "edu.seg2105.client.ui.ClientConsole",
-            "projectName": "", // FIX APPLIED HERE
+            "projectName": "",
             "args": ["Alice"]
         },
         
-        // --- 4. CLIENT CONFIGURATION: Bob ---
         {
             "type": "java",
             "name": "Launch Client 2 (Bob)",
             "request": "launch",
             "mainClass": "edu.seg2105.client.ui.ClientConsole",
-            "projectName": "", // FIX APPLIED HERE
+            "projectName": "",
             "args": ["Bob"]
         },
         
-        // --- 5. CLIENT CONFIGURATION: Connect to Port 1234 ---
         {
             "type": "java",
             "name": "Launch Client (Port 1234)",
             "request": "launch",
             "mainClass": "edu.seg2105.client.ui.ClientConsole",
-            "projectName": "", // FIX APPLIED HERE
+            "projectName": "",
             "args": ["Charlie", "localhost", "1234"] 
         },
         
-        // --- 6. CLIENT CONFIGURATION: No Login ID ---
         {
             "type": "java",
             "name": "Launch Client (No LoginID)",
             "request": "launch",
             "mainClass": "edu.seg2105.client.ui.ClientConsole",
-            "projectName": "", // FIX APPLIED HERE
+            "projectName": "",
             "args": []
         }
     ]

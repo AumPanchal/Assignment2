@@ -120,7 +120,7 @@ public class ChatClient extends AbstractClient {
 
                 if (parts.length < 2) {
 
-                    clientUI.display("ERROR: Command requires an argument.");
+                    clientUI.display("ERROR: Command Requires Argument.");
                     return;
 
                 }
@@ -153,7 +153,7 @@ public class ChatClient extends AbstractClient {
 
             else {
 
-                clientUI.display("ERROR: Must be logged off to change connection settings.");
+                clientUI.display("ERROR: Must Be Logged Off To Change Connection Settings.");
 
             }
         }
@@ -172,7 +172,7 @@ public class ChatClient extends AbstractClient {
 
         }
         catch (IOException e) {
-            clientUI.display("Could not send message to server. Terminating client.");
+            clientUI.display("Couldn't Send Message To Server. Terminating Client.");
             quit();
         }
     }
@@ -201,7 +201,7 @@ public class ChatClient extends AbstractClient {
       
         catch (IOException e) {
 
-            clientUI.display("ERROR: Failed to send automatic login command. Terminating.");
+            clientUI.display("ERROR: Failed To Send Automatic Login Command. Terminating.");
             quit();
         
         }
@@ -214,7 +214,7 @@ public class ChatClient extends AbstractClient {
     @Override
     public void connectionException(Exception exception) {
 
-        System.out.println("The server has shut down.");
+        System.out.println("Server: Shut Down");
         System.exit(0);
 
     }

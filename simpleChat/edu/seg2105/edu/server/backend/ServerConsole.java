@@ -3,7 +3,6 @@ package edu.seg2105.edu.server.backend;
 import java.io.*;
 import edu.seg2105.client.common.ChatIF; 
 
-// The class must implement Runnable to be run in its own thread
 public class ServerConsole implements ChatIF, Runnable {
     
     private EchoServer server;
@@ -27,14 +26,13 @@ public class ServerConsole implements ChatIF, Runnable {
     public void run() { 
         
         try {
-            // Use BufferedReader for robust blocking console input
+            
             BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
             String message;
             System.out.println("Server Console Running. Type messages or commands (#).");
 
             while (true) {
                 
-                // This line blocks until input is received, which is safe in a separate thread
                 message = fromConsole.readLine(); 
                 handleMessageFromServerUI(message);
 
@@ -50,12 +48,11 @@ public class ServerConsole implements ChatIF, Runnable {
         
         if (message.startsWith("#")) {
                 
-            // Robust command parsing: trim whitespace and convert to lowercase
             String command = message.split(" ", 2)[0].trim().toLowerCase(); 
             
             if (command.equals("#quit")) {
 
-                System.out.println("Server quitting gracefully...");
+                System.out.println("Server: Quitting...");
 
                 try {
 
@@ -100,7 +97,6 @@ public class ServerConsole implements ChatIF, Runnable {
                 } 
                 catch (IOException e) {
 
-                    // Diagnostic output for closure failure
                     System.out.println("FATAL ERROR: Server closure failed. Check stack trace below:");
                     e.printStackTrace(); 
                     
@@ -114,7 +110,7 @@ public class ServerConsole implements ChatIF, Runnable {
                     try {
 
                         server.listen();
-                        System.out.println("Server now listening for new clients on port " + server.getPort());
+                        System.out.println("Server listening for new clients on port " + server.getPort());
 
                     } 
                     
@@ -127,7 +123,7 @@ public class ServerConsole implements ChatIF, Runnable {
                 
                 else {
 
-                    System.out.println("ERROR: Server is already listening.");
+                    System.out.println("ERROR: Server already listening.");
 
                 }
             }
@@ -145,7 +141,7 @@ public class ServerConsole implements ChatIF, Runnable {
                     String[] parts = message.split(" ", 2);
 
                     if (parts.length < 2) {
-                        System.out.println("ERROR: #setport requires a port number.");
+                        System.out.println("ERROR: #setport requires a port number!");
                         return;
                     }
                     
@@ -160,20 +156,20 @@ public class ServerConsole implements ChatIF, Runnable {
                     } 
                     catch (NumberFormatException e) {
 
-                        System.out.println("ERROR: Invalid port number format.");
+                        System.out.println("ERROR: INVALID port num format.");
 
                     }
                 } 
                 else {
 
-                    System.out.println("ERROR: Must #stop or #close server before changing port.");
+                    System.out.println("ERROR: Must #stop or #close server before changing port!");
 
                 }
             }
             
             else {
 
-                System.out.println("ERROR: Unknown Server Command.");
+                System.out.println("ERROR: Unknown Command.");
 
             }
             
@@ -181,17 +177,17 @@ public class ServerConsole implements ChatIF, Runnable {
         
         else {
             
-            String fullMessage = "SERVER MESSAGE> " + message;
-            System.out.println(fullMessage); // Print prefixed message to server console
+            String fullMessage = "SERVER> " + message;
+            System.out.println(fullMessage);
                         
             try {
 
-                server.sendToAllClients(fullMessage); // Send prefixed message to clients
+                server.sendToAllClients(fullMessage);
                 
             }
             catch (Exception e) {
 
-                System.out.println("Warning: Cannot send message to clients.");
+                System.out.println("WARNING: Cannot send message to clients.");
 
             }
         }
