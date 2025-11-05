@@ -1,6 +1,7 @@
 package edu.seg2105.edu.server.backend; 
 
 import java.io.*;
+import java.util.Scanner;
 import edu.seg2105.client.common.ChatIF; 
 
 public class ServerConsole implements ChatIF {
@@ -19,30 +20,35 @@ public class ServerConsole implements ChatIF {
     }
 
     public void accept() {
+        
+        Scanner fromConsole = new Scanner(System.in);
+        String message;
+        System.out.println("Server Console Running. Type messages or commands (#).");
+
         try {
-
-            BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
-            String message;
-            System.out.println("Server Console Running. Type messages or commands (#).");
-
             while (true) {
-
-                message = fromConsole.readLine();
-                handleMessageFromServerUI(message);
-
+                
+                if (fromConsole.hasNextLine()) {
+                    message = fromConsole.nextLine();
+                    handleMessageFromServerUI(message);
+                } else {
+                    
+                    Thread.sleep(100); 
+                }
             }
         } catch (Exception e) {
-
-            System.out.println("FATAL ERROR: Server console input failed.");
-
+            System.out.println("FATAL ERROR: Server console input failed or thread interrupted.");
+            
+        } finally {
+            fromConsole.close();
         }
     }
 
     public void handleMessageFromServerUI(String message) {
         
         if (message.startsWith("#")) {
-            
-            String command = message.split(" ")[0].toLowerCase();
+                
+            String command = message.split(" ", 2)[0].trim().toLowerCase(); 
             
             if (command.equals("#quit")) {
 
@@ -81,17 +87,19 @@ public class ServerConsole implements ChatIF {
             
             else if (command.equals("#close")) {
 
+                System.out.println("Processing #close command..."); 
+
                 try {
 
                     server.close(); 
-                    System.out.println("Server closed. All clients disconnected.");
+                    System.out.println("Server closed. All clients disconnected."); 
 
                 } 
-
                 catch (IOException e) {
 
-                    System.out.println("ERROR closing server: " + e.getMessage());
-
+                    System.out.println("FATAL ERROR: Server closure failed. Stack Trace follows:");
+                    e.printStackTrace(); 
+                    
                 }
             }
             

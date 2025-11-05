@@ -186,10 +186,9 @@ public class ChatClient extends AbstractClient {
 
         }
         catch(IOException e) {
-        
-            System.exit(0);
-
         }
+
+        System.exit(0);
     }
 
     @Override
